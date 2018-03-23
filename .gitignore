@@ -1,0 +1,8 @@
+target
+.mule
+*.iml
+
+.idea/
+activemq-data
+notes.txt
+src/main/resources/active-mq
