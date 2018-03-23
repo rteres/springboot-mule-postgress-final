@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:util="http://www.springframework.org/schema/util" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+
+	<spring:beans>
+	
+		<!-- <spring:bean id="decryptPropertyPlaceHolderConfigurer2" name="decryptPropertyPlaceHolderConfigurer2"
+			class="com.pwc.chim.util.DocDecryptPropertyPlaceHolderConfigurer" >
+			<spring:property name="location" value="file:/data/chim/properties/consumerapp/consumerServicesPwd.properties" />
+			<spring:property name="serFilePath" value="file:/data/chim/properties/consumerapp/consumerServicesSecurity.ser" />
+			<spring:property name="placeholderPrefix" value="encrypted#[" />
+			<spring:property name="placeholderSuffix" value="]" />
+		</spring:bean>  -->
+		
+		<!--  doc_cp datasource for consumer app -->
+		<spring:bean id="apiDatasource" class="com.pwc.chim.audrey.util.ExtendedBasicDataSource" name="Bean">
+			<spring:property name="driverClassName" value="org.postgresql.Driver" />
+ 			<spring:property name="url" value="jdbc:postgres://wxcoqqowuhghgj:80ab2ada3e6149f1680c23d552b822428df3a635d5eed3154745c80eecacc322@ec2-174-129-225-9.compute-1.amazonaws.com:5432/den3gmg3k9otbr" />
+			<spring:property name="username" value="wxcoqqowuhghgj" />
+ 			<spring:property name="password" value="80ab2ada3e6149f1680c23d552b822428df3a635d5eed3154745c80eecacc322" /> 
+ 			<!-- <spring:property name="url" value="jdbc:oracle:thin:@172.19.71.41:1521:DJDEVDOC" />
+			<spring:property name="username" value="doc_cp" />
+			<spring:property name="password" value="DjDQDevcpo1" /> -->
+			<spring:property name="testWhileIdle" value="true" />
+			<spring:property name="testOnBorrow" value="true" />
+			<spring:property name="testOnReturn" value="true" />
+			<spring:property name="validationQuery" value="SELECT 1 from dual" />
+			<spring:property name="initialSize" value="5" />
+			<spring:property name="minIdle" value="0" />
+			<spring:property name="maxTotal" value="15" />
+			<spring:property name="maxIdle" value="15" />
+			<spring:property name="maxWaitMillis" value="-1" />
+			<spring:property name="removeAbandonedOnBorrow" value="true" />
+			<spring:property name="removeAbandonedTimeout" value="300" />
+			<spring:property name="encryptConnectionProperty">
+	        	<spring:props>
+	        		<spring:prop key="CONNECTION_PROPERTY_THIN_NET_ENCRYPTION_LEVEL">REQUIRED</spring:prop>
+	        		<spring:prop key="CONNECTION_PROPERTY_THIN_NET_ENCRYPTION_TYPES">AES256</spring:prop>
+	        		<spring:prop key="CONNECTION_PROPERTY_THIN_NET_CHECKSUM_LEVEL">REQUESTED</spring:prop>
+	        		<spring:prop key="CONNECTION_PROPERTY_THIN_NET_CHECKSUM_TYPES">SHA1</spring:prop>
+	        	</spring:props>
+        	</spring:property>
+		</spring:bean> 
+
+	</spring:beans>
+	
+</mule>

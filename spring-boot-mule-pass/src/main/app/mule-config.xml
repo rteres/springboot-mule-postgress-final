@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:spring="http://www.springframework.org/schema/beans"
+      xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
+      xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
+      xmlns:file="http://www.mulesoft.org/schema/mule/file"
+      xmlns:ftp="http://www.mulesoft.org/schema/mule/ftp"
+      xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	  xmlns:mule-xml="http://www.mulesoft.org/schema/mule/xml"
+      xmlns:jersey="http://www.mulesoft.org/schema/mule/jersey"
+      xmlns:json="http://www.mulesoft.org/schema/mule/json"
+      xmlns:ws="http://www.mulesoft.org/schema/mule/ws"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ftp http://www.mulesoft.org/schema/mule/ftp/current/mule-ftp.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/xml http://www.mulesoft.org/schema/mule/xml/current/mule-xml.xsd
+http://www.mulesoft.org/schema/mule/jersey http://www.mulesoft.org/schema/mule/jersey/current/mule-jersey.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+http://www.mulesoft.org/schema/mule/ws http://www.mulesoft.org/schema/mule/ws/current/mule-ws.xsd">
+
+    <!--
+    <jms:activemq-connector name="jmsConnector1"
+                            connectionFactory-ref="connectionFactoryTCP"
+                            specification="1.1"
+                            validateConnections="true"
+                            maxRedelivery="-1"
+                            numberOfConsumers="1"/>
+                            -->
+    <http:listener-config name="httpConfig" host="0.0.0.0" port="${http.port}" 
+                          doc:name="HTTP Listener Configuration">
+    </http:listener-config>
+    <spring:beans>
+        <spring:import resource="classpath:conf/consumer-services-spring-context.xml"/>
+    </spring:beans>
+    <db:generic-config name="Generic_Database_Configuration" url="jdbc:postgresql://ec2-174-129-225-9.compute-1.amazonaws.com:5432/den3gmg3k9otbr?user=wxcoqqowuhghgj&amp;password=80ab2ada3e6149f1680c23d552b822428df3a635d5eed3154745c80eecacc322&amp;sslmode=require" driverClassName="org.postgresql.Driver" doc:name="Generic Database Configuration"/>
+
+
+    <flow name="getHTTPTest">
+        <http:listener config-ref="httpConfig" doc:name="User data" path="test" allowedMethods="GET">
+        </http:listener>
+        <logger category="getHTTPTest" level="INFO" message="Hello Mule" doc:name="Logger"/>
+        <set-payload value="Welcome Paas Mule!" doc:name="Set Payload"/>
+    </flow>
+    <flow name="mule-configFlow">
+        <http:listener config-ref="httpConfig" path="testMuleHeroku" allowedMethods="GET" doc:name="HTTP"/>
+        <logger message="==== test1 API " level="INFO" doc:name="Logger"/>
+        <db:select config-ref="Generic_Database_Configuration" doc:name="Database">
+            <db:parameterized-query><![CDATA[select * from public."CONFIG"]]></db:parameterized-query>
+        </db:select>
+        <byte-array-to-string-transformer doc:name="Byte Array to String"/>
+        <set-payload value="#[payload]" doc:name="Set Payload"/>
+    </flow>
+    <flow name="mule-configFlow1">
+        <http:listener config-ref="httpConfig" path="test2" allowedMethods="GET" doc:name="HTTP"/>
+        <logger message="==== test2222222 API " level="INFO" doc:name="Logger"/>
+        <set-payload value="{ &quot;resourceType&quot;: &quot;OperationOutcome&quot;, &quot;issue&quot;: [ { &quot;severity&quot;: &quot;info&quot;, &quot;code&quot;: &quot;security&quot;, &quot;details&quot;: { &quot;text&quot;: &quot;Flow test222222&quot; } } ] }" doc:name="Set Payload"/>
+    </flow>
+    <!--
+    <flow name="jmsInboundFlow1">
+        <jms:inbound-endpoint queue="queue1" connector-ref="jmsConnector1" exchange-pattern="one-way">
+        </jms:inbound-endpoint>
+        <append-string-transformer message=" Received from jmsInboundFlow1  " />
+        <logger message="This is a jms flow  jmsInboundFlow1 #[payload] #[message.inboundProperties]" level="INFO"/>
+    </flow>
+    -->
+</mule>
